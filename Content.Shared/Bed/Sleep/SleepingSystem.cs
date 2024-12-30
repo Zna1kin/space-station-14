@@ -1,6 +1,8 @@
 using Content.Shared.Actions;
+using Content.Shared.Buckle.Components;
 using Content.Shared.Damage;
 using Content.Shared.Damage.ForceSay;
+using Content.Shared.Emoting;
 using Content.Shared.Examine;
 using Content.Shared.Eye.Blinding.Systems;
 using Content.Shared.IdentityManagement;
@@ -33,8 +35,8 @@ public sealed partial class SleepingSystem : EntitySystem
     [Dependency] private readonly SharedEmitSoundSystem _emitSound = default!;
     [Dependency] private readonly StatusEffectsSystem _statusEffectsSystem = default!;
 
-    public static readonly ProtoId<EntityPrototype> SleepActionId = "ActionSleep";
-    public static readonly ProtoId<EntityPrototype> WakeActionId = "ActionWake";
+    public static readonly EntProtoId SleepActionId = "ActionSleep";
+    public static readonly EntProtoId WakeActionId = "ActionWake";
 
     public override void Initialize()
     {
@@ -59,6 +61,16 @@ public sealed partial class SleepingSystem : EntitySystem
         SubscribeLocalEvent<SleepingComponent, InteractHandEvent>(OnInteractHand);
 
         SubscribeLocalEvent<ForcedSleepingComponent, ComponentInit>(OnInit);
+        SubscribeLocalEvent<SleepingComponent, UnbuckleAttemptEvent>(OnUnbuckleAttempt);
+        SubscribeLocalEvent<SleepingComponent, EmoteAttemptEvent>(OnEmoteAttempt);
+    }
+
+    private void OnUnbuckleAttempt(Entity<SleepingComponent> ent, ref UnbuckleAttemptEvent args)
+    {
+        // TODO is this necessary?
+        // Shouldn't the interaction have already been blocked by a general interaction check?
+        if (ent.Owner == args.User)
+            args.Cancelled = true;
     }
 
     private void OnBedSleepAction(Entity<ActionsContainerComponent> ent, ref SleepActionEvent args)
@@ -118,9 +130,6 @@ public sealed partial class SleepingSystem : EntitySystem
         RaiseLocalEvent(ent, ref ev);
         _blindableSystem.UpdateIsBlind(ent.Owner);
         _actionsSystem.AddAction(ent, ref ent.Comp.WakeAction, WakeActionId, ent);
-
-        // TODO remove hardcoded time.
-        _actionsSystem.SetCooldown(ent.Comp.WakeAction, _gameTiming.CurTime, _gameTiming.CurTime + TimeSpan.FromSeconds(2f));
     }
 
     private void OnSpeakAttempt(Entity<SleepingComponent> ent, ref SpeakAttemptEvent args)
@@ -148,12 +157,12 @@ public sealed partial class SleepingSystem : EntitySystem
 
     private void OnSlip(Entity<SleepingComponent> ent, ref SlipAttemptEvent args)
     {
-        args.Cancel();
+        args.NoSlip = true;
     }
 
     private void OnConsciousAttempt(Entity<SleepingComponent> ent, ref ConsciousAttemptEvent args)
     {
-        args.Cancel();
+        args.Cancelled = true;
     }
 
     private void OnExamined(Entity<SleepingComponent> ent, ref ExaminedEvent args)
@@ -299,6 +308,14 @@ public sealed partial class SleepingSystem : EntitySystem
 
         Wake((ent, ent.Comp));
         return true;
+    }
+
+    /// <summary>
+    /// Prevents the use of emote actions while sleeping
+    /// </summary>
+    public void OnEmoteAttempt(Entity<SleepingComponent> ent, ref EmoteAttemptEvent args)
+    {
+        args.Cancel();
     }
 }
 

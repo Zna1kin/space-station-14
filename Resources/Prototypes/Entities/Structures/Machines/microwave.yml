@@ -105,6 +105,7 @@
   - type: GuideHelp
     guides:
     - Chef
+    - FoodRecipes
 
 - type: entity
   id: SyndicateMicrowave
@@ -121,5 +122,9 @@
     sprite: Structures/Machines/microwave_syndie.rsi
     drawdepth: SmallObjects
     snapCardinals: true
-
-
+  - type: Machine
+    board: SyndicateMicrowaveMachineCircuitboard
+  - type: FoodRecipeProvider
+    providedRecipes:
+    - RecipeBaguetteSword
+    - RecipeThrowingCroissant

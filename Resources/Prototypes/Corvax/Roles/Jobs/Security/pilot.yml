@@ -1,6 +1,7 @@
 - type: job
   id: Pilot
   name: job-name-pilot
+  description: job-description-pilot
   playTimeTracker: JobPilot
   requirements:
   - !type:DepartmentTimeRequirement
@@ -30,3 +31,8 @@
     ears: ClothingHeadsetSecurity
     neck: ClothingNeckTieRed
     pocket1: WeaponPistolMk58
+  storage:
+    back:
+    - BoxSurvivalSecurity
+    - Flash
+    - MagazinePistol

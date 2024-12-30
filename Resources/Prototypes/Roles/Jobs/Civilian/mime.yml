@@ -5,7 +5,7 @@
   playTimeTracker: JobMime
   requirements:
   - !type:OverallPlaytimeRequirement
-      time: 90000 #25 hrs # Corvax-RoleTime
+      time: 3600 #1 hrs # Corvax-RoleTime
   startingGear: MimeGear
   icon: "JobIconMime"
   supervisors: job-supervisors-hop
@@ -21,7 +21,6 @@
 - type: startingGear
   id: MimeGear
   equipment:
-    belt: ClothingBeltSuspenders
     gloves: ClothingHandsGlovesColorWhite
     shoes: ClothingShoesColorWhite
     pocket1: CrayonMime
@@ -30,7 +29,6 @@
     ears: ClothingHeadsetService
   storage:
     back:
-    - BoxSurvival
     - RubberStampMime
 
 - type: entity
